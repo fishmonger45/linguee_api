@@ -1,4 +1,6 @@
 import hashlib
+import time
+from pathlib import Path
 from typing import Protocol
 
 import structlog
@@ -56,6 +58,26 @@ async def create_cache() -> Cache:
 
     log.info("cache_backend", backend="memory")
     return MemoryCache()
+
+
+class DiskCache:
+    def __init__(self, ttl: int = 86400) -> None:
+        self._dir = Path.home() / ".cache" / "linguee"
+        self._dir.mkdir(parents=True, exist_ok=True)
+        self._ttl = ttl
+
+    async def get(self, key: str) -> str | None:
+        p = self._dir / key
+        if not p.exists():
+            return None
+        if time.time() - p.stat().st_mtime > self._ttl:
+            p.unlink(missing_ok=True)
+            return None
+        return p.read_text()
+
+    async def set(self, key: str, value: str, ttl: int) -> None:
+        p = self._dir / key
+        p.write_text(value)
 
 
 async def cached_fetch(cache: Cache, key: str, fetcher) -> str:

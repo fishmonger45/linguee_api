@@ -1,13 +1,11 @@
 import asyncio
-import sys
 
 import httpx
 
 from linguee_api.client import CaptchaError, LingueeError, fetch_search
+from linguee_api.logging import setup_logging
 from linguee_api.models import Correction, NotFound, ParseError
 from linguee_api.parser import parse_search_result
-
-from linguee_api.logging import setup_logging
 
 SRC = "de"
 DST = "en"
@@ -57,7 +55,10 @@ async def lookup(client: httpx.AsyncClient, word: str) -> None:
         for t in lemma.translations:
             freq = ""
             if t.usage_frequency:
-                freq = f" {GREEN}●{RESET}" if t.usage_frequency.value == "almost_always" else f" {GREEN}○{RESET}"
+                if t.usage_frequency.value == "almost_always":
+                    freq = f" {GREEN}●{RESET}"
+                else:
+                    freq = f" {GREEN}○{RESET}"
             t_pos = f" {DIM}{t.pos}{RESET}" if t.pos else ""
             print(f"    {CYAN}→{RESET} {t.text}{t_pos}{freq}")
 
@@ -94,10 +95,21 @@ async def repl() -> None:
 
 
 def main() -> None:
-    try:
-        asyncio.run(repl())
-    except KeyboardInterrupt:
-        pass
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Linguee dictionary")
+    parser.add_argument("--no-tui", action="store_true", help="use simple REPL instead of TUI")
+    args = parser.parse_args()
+
+    if args.no_tui:
+        import contextlib
+
+        with contextlib.suppress(KeyboardInterrupt):
+            asyncio.run(repl())
+    else:
+        from linguee_api.tui.app import LingueeApp
+
+        LingueeApp().run()
 
 
 if __name__ == "__main__":

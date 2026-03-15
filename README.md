@@ -2,6 +2,8 @@
 
 Unofficial JSON API proxy for [Linguee](https://www.linguee.com). Scrapes Linguee HTML and returns structured JSON for translations, examples, external sources, and autocompletions.
 
+![screenshot](img/img.png)
+
 ## Quick Start
 
 ```bash
@@ -24,6 +26,31 @@ Open http://localhost:8000/docs for interactive API docs.
 All endpoints accept `query`, `src`, and `dst` language code parameters.
 
 **Supported languages**: bg, cs, da, de, el, en, es, et, fi, fr, hu, it, ja, lt, lv, mt, nl, pl, pt, ro, ru, sk, sl, sv, zh
+
+## CLI
+
+German-English dictionary TUI with clickable words, history, and bookmarks.
+
+```bash
+linguee
+```
+
+Install globally with `uv tool install .` or run from the project with `uv run linguee`.
+
+Use `linguee --no-tui` for a simple REPL without the TUI.
+
+| Key | Action |
+|---|---|
+| `ctrl+o` / `ctrl+i` | Back / forward in history |
+| `ctrl+n` / `ctrl+p` | Navigate lists |
+| `ctrl+d` | Flip direction (de↔en) |
+| `ctrl+s` | Bookmark current word |
+| `ctrl+b` | Show bookmarks |
+| `ctrl+u` + vowel | Type umlauts (ä, ö, ü, ß) |
+| `ctrl+l` | Focus search |
+| `escape` | Close panel |
+
+History and bookmarks are stored in `~/.local/share/linguee/`. Lookups are cached in `~/.cache/linguee/`.
 
 ## Configuration
 
