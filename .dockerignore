@@ -1,0 +1,8 @@
+.venv
+.git
+.claude
+__pycache__
+*.py[cod]
+.env
+.ruff_cache
+.mypy_cache
